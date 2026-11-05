@@ -12,7 +12,7 @@ abs_sum_args = 2
 
 
 def _prepare_entropy_args(img: Tensor) -> tuple:
-    """Prepare arguments for C++ entropy and abs_sum operators.
+    """Prepare arguments for the entropy and abs_sum operators.
 
     Returns tuple of (img, nbatch) for abs_sum call and (img, norm, nbatch) for entropy call.
     Used internally by entropy and for testing.

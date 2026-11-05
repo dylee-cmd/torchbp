@@ -10,9 +10,9 @@ __all__ = [
 coherence_2d_args = 7
 
 def _prepare_coherence_2d_args(img0: Tensor, img1: Tensor, Navg: tuple) -> tuple:
-    """Prepare arguments for C++ coherence_2d operator.
+    """Prepare arguments for the coherence_2d operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by coherence_2d and for testing.
     """
     if img0.shape != img1.shape:

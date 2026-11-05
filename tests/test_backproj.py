@@ -1676,7 +1676,7 @@ class TestGPGABackprojection2DLanczos(TestCase):
     def _opcheck(self, device):
         samples = self.sample_inputs(device, requires_grad=False)
         for args in samples:
-            # Prepare C++ operator arguments
+            # Prepare operator arguments
             target_pos = args["target_pos"]
             data = args["data"]
             pos = args["pos"]

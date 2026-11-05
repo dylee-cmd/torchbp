@@ -707,7 +707,7 @@ class TestPolarInterpLanczos(TestCase):
     def _opcheck(self, device):
         samples = self.sample_inputs(device, requires_grad=False)
         for args in samples:
-            # Prepare C++ operator arguments
+            # Prepare operator arguments
             img = args["img"]
             dorigin = args["dorigin"]
             fc = args["fc"]
@@ -778,7 +778,7 @@ class TestPolarToCartLanczos(TestCase):
     def _opcheck(self, device):
         samples = self.sample_inputs(device, requires_grad=False)
         for args in samples:
-            # Prepare C++ operator arguments
+            # Prepare operator arguments
             img = args["img"]
             origin = args["origin"]
             fc = args["fc"]
@@ -1040,7 +1040,7 @@ class TestFFBPMerge2Lanczos(TestCase):
     def _opcheck(self, device):
         samples = self.sample_inputs(device, requires_grad=False)
         for args in samples:
-            # Prepare C++ operator arguments
+            # Prepare operator arguments
             img0 = args["img0"]
             img1 = args["img1"]
             dorigin0 = args["dorigin0"]

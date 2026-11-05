@@ -38,7 +38,7 @@ def lee_filter(img: Tensor, wx: int, wy: int, cu: float) -> Tensor:
     else:
         raise ValueError(f"Invalid image shape: {img.shape}")
 
-    # Half-window size in C++
+    # Half-window size used by the operator
     wx = wx // 2
     wy = wy // 2
 

@@ -210,9 +210,9 @@ def _prepare_polar_interp_linear_args(
     z0: float = 0,
     alias_fmod: float = 0,
 ) -> tuple:
-    """Prepare arguments for C++ polar_interp_linear operator.
+    """Prepare arguments for the polar_interp_linear operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by polar_interp_linear and for testing.
     """
     nbatch = get_batch_dims_img(img, dorigin)
@@ -813,7 +813,7 @@ def ffbp_merge2_poly(
             poly_degree = select_knab_poly_degree(oversample, order)
 
         # Compute polynomial coefficients for full Knab kernel (sinc * window as single polynomial)
-        # This eliminates sinpif and division from the CUDA kernel
+        # This eliminates sinpif and division from the interpolation kernel
         poly_coefs = compute_knab_poly_coefs_full(order, oversample, poly_degree).to(device)
     else:
         poly_coefs = poly_coefs.to(device)
@@ -1352,9 +1352,9 @@ def _prepare_polar_to_cart_linear_args(
     rotation: float = 0,
     alias_fmod: float = 0
 ) -> tuple:
-    """Prepare arguments for C++ polar_to_cart_linear operator.
+    """Prepare arguments for the polar_to_cart_linear operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by polar_to_cart_linear and for testing.
     """
     nbatch = get_batch_dims_img(img, origin)
@@ -1587,9 +1587,9 @@ def _prepare_cart_to_polar_linear_args(
     rotation: float = 0,
     alias_fmod: float = 0
 ) -> tuple:
-    """Prepare arguments for C++ cart_to_polar_linear operator.
+    """Prepare arguments for the cart_to_polar_linear operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by cart_to_polar_linear and for testing.
     """
     nbatch = get_batch_dims_img(img, origin)

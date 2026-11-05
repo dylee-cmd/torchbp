@@ -2,43 +2,37 @@
 
 ![SAR image](https://github.com/Ttl/torchbp/blob/master/docs/img/07_19_1_autofocus_sigma0_pol_cal_pauli.png?raw=true)
 
-Fast C++ Pytorch extension for differentiable synthetic aperture radar image formation and autofocus library on GPU.
+Differentiable synthetic aperture radar image formation and autofocus library
+written in pure PyTorch.
 
-Only Nvidia GPUs are supported. Currently, only some of the operations are supported on CPU.
+All operators are implemented with standard PyTorch tensor operations, there
+is no compiled extension. The library runs on any device supported by
+PyTorch (CPU, CUDA, MPS, ...) and every operation is available on every
+device.
 
-On RTX 3090 Ti backprojection on polar grid achieves 370 billion
-backprojections/s and fast factorized backprojection (ffbp) is ten times faster on
-moderate size images.
+Geometry and phase computations use float64 by default for accuracy. On GPUs
+with slow double precision they can be switched to float32 with
+`torchbp.set_geometry_dtype(torch.float32)`. The peak memory of the
+vectorized kernels is bounded by chunking, tune it with
+`torchbp.set_chunk_elements(n)`.
 
 ## Installation
 
-Tested with CUDA version 12.9.
-
-### From source
-
-Install PyTorch first, then build torchbp against that same torch with
-build isolation disabled:
+The only dependencies are PyTorch, NumPy and SciPy.
 
 ```bash
 pip install torch
 git clone https://github.com/Ttl/torchbp.git
 cd torchbp
-pip install --no-build-isolation -e .
+pip install -e .
 ```
-
-`--no-build-isolation` is required. The extension links libtorch C++ symbols
-that are not ABI-stable across torch versions, so it must be compiled against
-the exact torch you run at import time. Without the flag, pip builds in an
-isolated environment with a different (freshly downloaded) torch, producing
-a `.so` that fails to import with an `undefined symbol` error. For the same
-reason, rebuild torchbp whenever you change your torch version.
 
 ## Tests
 
 Install test dependencies, then run pytest:
 
 ```bash
-pip install --no-build-isolation -e .[test]
+pip install -e .[test]
 pytest tests/
 ```
 
@@ -51,7 +45,7 @@ Latest documentation can be viewed at: https://ttl.github.io/torchbp/
 API documentation and examples can be built with sphinx.
 
 ```bash
-pip install --no-build-isolation .[docs]
+pip install .[docs]
 cd docs
 make html
 ```

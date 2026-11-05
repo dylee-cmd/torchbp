@@ -50,9 +50,9 @@ def _prepare_backprojection_polar_2d_args(
     normalize: bool = True,
     dem: Tensor | None = None
 ) -> tuple:
-    """Prepare arguments for C++ backprojection_polar_2d operator.
+    """Prepare arguments for the backprojection_polar_2d operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by backprojection_polar_2d and for testing.
     """
     r0, r1, theta0, theta1, nr, ntheta, dr, dtheta = unpack_polar_grid(grid)
@@ -107,9 +107,9 @@ def _prepare_backprojection_polar_2d_lanczos_args(
     normalize: bool = True,
     dem: Tensor | None = None
 ) -> tuple:
-    """Prepare arguments for C++ backprojection_polar_2d_lanczos operator.
+    """Prepare arguments for the backprojection_polar_2d_lanczos operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by backprojection_polar_2d_lanczos and for testing.
     """
     # Reuse linear preparation and insert order parameter
@@ -138,9 +138,9 @@ def _prepare_backprojection_polar_2d_knab_args(
     normalize: bool = True,
     dem: Tensor | None = None
 ) -> tuple:
-    """Prepare arguments for C++ backprojection_polar_2d_knab operator.
+    """Prepare arguments for the backprojection_polar_2d_knab operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by backprojection_polar_2d_knab and for testing.
     """
     # Reuse linear preparation and insert order and oversample parameters
@@ -538,9 +538,9 @@ def _prepare_backprojection_cart_2d_args(
     beamwidth: float = torch.pi,
     data_fmod: float = 0
 ) -> tuple:
-    """Prepare arguments for C++ backprojection_cart_2d operator.
+    """Prepare arguments for the backprojection_cart_2d operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by backprojection_cart_2d and for testing.
     """
     x0, x1, y0, y1, nx, ny, dx, dy = unpack_cartesian_grid(grid)
@@ -624,9 +624,9 @@ def _prepare_projection_cart_2d_args(
     normalization: str = "beta",
     vel: Tensor | None = None,
 ) -> tuple:
-    """Prepare arguments for C++ projection_cart_2d operator.
+    """Prepare arguments for the projection_cart_2d operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by projection_cart_2d and for testing.
     """
     x0, x1, y0, y1, nx, ny, dx, dy = unpack_cartesian_grid(grid)
@@ -773,7 +773,7 @@ def _prepare_projection_cart_2d_nufft_args(
     use_rvp: bool = True,
     normalization: str = "beta",
 ) -> tuple:
-    """Prepare arguments for C++ projection_cart_2d_nufft operator."""
+    """Prepare arguments for the projection_cart_2d_nufft operator."""
     x0, x1, y0, y1, nx, ny, dx, dy = unpack_cartesian_grid(grid)
 
     if img.dim() == 2:
@@ -1029,7 +1029,7 @@ def blocksvd_alpha(
 
 
 def _tx_power_norm_int(normalization: str | None) -> int:
-    """Map tx_power normalization string to the C++ enum value."""
+    """Map tx_power normalization string to the operator enum value."""
     if normalization == "beta" or normalization is None:
         return 0
     elif normalization == "sigma":
@@ -1128,9 +1128,9 @@ def _prepare_backprojection_polar_2d_tx_power_args(
     azimuth_resolution: bool = True,
     dem: Tensor | None = None,
 ) -> tuple:
-    """Prepare arguments for C++ backprojection_polar_2d_tx_power operator.
+    """Prepare arguments for the backprojection_polar_2d_tx_power operator.
 
-    Returns tuple of arguments matching C++ operator signature; ``dem`` is
+    Returns tuple of arguments matching the operator schema; ``dem`` is
     stacked with its Cartesian slopes and appended last.
     Used internally by backprojection_polar_2d_tx_power and for testing.
     """
@@ -1334,9 +1334,9 @@ def _prepare_backprojection_cart_2d_tx_power_args(
     normalization: str | None = None,
     azimuth_resolution: bool = True,
 ) -> tuple:
-    """Prepare arguments for C++ backprojection_cart_2d_tx_power operator.
+    """Prepare arguments for the backprojection_cart_2d_tx_power operator.
 
-    Returns tuple of arguments matching C++ operator signature.
+    Returns tuple of arguments matching the operator schema.
     Used internally by backprojection_cart_2d_tx_power and for testing.
     """
     x0, x1, y0, y1, nx, ny, dx, dy = unpack_cartesian_grid(grid)

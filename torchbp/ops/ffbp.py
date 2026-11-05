@@ -1204,7 +1204,7 @@ def _ffbp_impl(
                     # cost 1/afbp_nsub as much; decimate the pulses by the
                     # same factor to match, otherwise the maps cost more than
                     # the afbp base itself. afbp_nsub=1 reduces to the plain
-                    # decimated maps. CUDA kernel outputs at decimated
+                    # decimated maps. The merge op outputs at decimated
                     # resolution directly.
                     w1_map, w2_map = _illumination_pulse_decimated(
                         pos_local, att_local, g, g_extent, grid_local,

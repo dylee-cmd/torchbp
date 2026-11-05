@@ -269,7 +269,7 @@ class AntennaPattern:
             self.g_el0 = self.g_az0 = self.g_el1 = self.g_az1 = 0.0
 
     def to_cpp_args(self) -> Tuple:
-        """Convert to tuple for C++ call.
+        """Convert to tuple of operator arguments.
 
         Returns
         -------

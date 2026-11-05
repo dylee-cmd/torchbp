@@ -29,7 +29,7 @@ from .util import (
 )
 import inspect
 
-#: Speed of light in vacuum [m/s]. Must match ``kC0`` in ``csrc/cpu/util.h``.
+#: Speed of light in vacuum [m/s]. Must match ``C0`` in ``torchbp/_impl/_common.py``.
 C0 = 299792458.0
 
 #: Default cap on the antenna weight rows :class:`_AntennaWeightCache`

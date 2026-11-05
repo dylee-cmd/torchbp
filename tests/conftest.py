@@ -8,7 +8,7 @@ import unittest
 
 import torch
 
-#: Speed of light in vacuum [m/s]. Must match ``kC0`` in ``csrc/cpu/util.h``
+#: Speed of light in vacuum [m/s]. Must match ``C0`` in ``torchbp/_impl/_common.py``
 #: and :data:`torchbp.autofocus.C0`.
 C0 = 299792458.0
 

@@ -56,7 +56,7 @@ class TestEntropy(TestCase):
             torch.testing.assert_close(res_gpu.cpu(), res_cpu)
 
     def _opcheck(self, device):
-        # Test the underlying C++ operators
+        # Test the underlying operators
         samples = self.sample_inputs(device, requires_grad=False)
         for args in samples:
             img = args["img"]
