@@ -51,3 +51,9 @@ make html
 ```
 
 Open `docs/build/html/index.html`.
+
+## Change detection
+
+The `change_detection/` folder contains unsupervised SAR change detection
+methods for small objects (superpixel classification and fusion of
+difference images); see `change_detection/README.md`.
