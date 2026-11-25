@@ -57,3 +57,9 @@ Open `docs/build/html/index.html`.
 The `change_detection/` folder contains unsupervised SAR change detection
 methods for small objects (superpixel classification and fusion of
 difference images); see `change_detection/README.md`.
+
+## 3D reconstruction
+
+The `reconstruction/` folder contains 3D reconstruction of ship targets from
+multi-angle SAR images based on side-view projection; see
+`reconstruction/README.md`.
