@@ -17,6 +17,15 @@ from .common import (
 )
 from .fusion import fusion_change_detection
 from .superpixel_classification import superpixel_change_detection
+from .superpixel_emeans import superpixel_emeans_change_detection
+
+
+def _has_emeans():
+    try:
+        import emeans  # noqa: F401
+        return True
+    except ImportError:
+        return False
 
 
 def _sum(scores):
@@ -30,6 +39,9 @@ def main(argv=None):
     ap.add_argument("--height", type=int, default=400)
     ap.add_argument("--width", type=int, default=600)
     ap.add_argument("--targets", type=int, default=16)
+    ap.add_argument("--hard", action="store_true",
+                    help="smaller (3x5 px), weaker (8 dB) targets in strongly "
+                         "decorrelated clutter")
     ap.add_argument("--plot", type=str, default=None,
                     help="save a figure of the first scene to this file")
     args = ap.parse_args(argv)
@@ -40,8 +52,11 @@ def main(argv=None):
         rows.setdefault(name, []).append(score)
 
     for seed in range(args.seeds):
+        scene = dict(target_size=(3, 5), target_tcr_db=8.0,
+                     hetero_correlation=0.4) if args.hard else {}
         img1, img2, gt = make_synthetic_pair((args.height, args.width),
-                                             n_targets=args.targets, seed=seed)
+                                             n_targets=args.targets, seed=seed,
+                                             **scene)
         a, b = lee_filter(img1, 5), lee_filter(img2, 5)
 
         # Global Otsu baselines on single difference images.
@@ -67,6 +82,9 @@ def main(argv=None):
             evaluate_objects(morphological_opening(sr.coarse_map), gt, 7, 20))
         rr = superpixel_change_detection(img1, img2, stages="refinement")
         add("superpixel refinement only", evaluate_objects(rr.change_map, gt, 7, 20))
+        if _has_emeans():
+            er = superpixel_emeans_change_detection(img1, img2)
+            add("superpixel + e-means (improved)", evaluate_objects(er.change_map, gt, 7, 20))
         print(f"seed {seed}: fusion {t_f:.2f} s, superpixel {t_s:.2f} s "
               f"({sr.labels.max() + 1} superpixels, "
               f"{len(sr.mixture_selected)} refined)")

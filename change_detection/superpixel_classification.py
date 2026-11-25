@@ -28,7 +28,7 @@ Pipeline (Fig. 6 of the paper):
    opening.
 """
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Tuple
+from typing import Callable, Dict, Optional, Tuple
 
 import numpy as np
 from scipy import optimize, special, stats
@@ -313,7 +313,9 @@ def superpixel_change_detection(img1, img2, *, lee_size: int = 5,
                                 min_refine_pixels: int = 30,
                                 pi0: float = 0.2,
                                 alpha: Tuple[float, float] = (2.0, 2.0),
-                                seed: Optional[int] = 0) -> SuperpixelResult:
+                                seed: Optional[int] = 0,
+                                coarse_classifier: Optional[Callable] = None,
+                                ) -> SuperpixelResult:
     """Two stage superpixel classification change detection.
 
     Parameters
@@ -341,6 +343,11 @@ def superpixel_change_detection(img1, img2, *, lee_size: int = 5,
         EM initial mixture weight and Dirichlet prior.
     seed : int
         k-means random seed.
+    coarse_classifier : callable, optional
+        ``f(features, seed=seed) -> classes`` replacing the k-means coarse
+        classification (e.g. the e-means variant in
+        :mod:`change_detection.superpixel_emeans`). It must return HU, HEU or
+        CHANGED for every superpixel.
     """
     a = as_intensity(img1)
     b = as_intensity(img2)
@@ -360,7 +367,8 @@ def superpixel_change_detection(img1, img2, *, lee_size: int = 5,
     if stages == "refinement":
         classes = np.full(nlab, -1)
     else:
-        classes = coarse_classification(feats, seed=seed)
+        classify = coarse_classification if coarse_classifier is None else coarse_classifier
+        classes = classify(feats, seed=seed)
 
     coarse = np.zeros(ncb.size, dtype=bool)
     refined = np.zeros(ncb.size, dtype=bool)

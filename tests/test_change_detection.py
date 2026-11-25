@@ -143,3 +143,37 @@ class TestFusion(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+try:
+    import emeans  # noqa: F401
+    HAS_EMEANS = True
+except ImportError:
+    HAS_EMEANS = False
+
+
+@unittest.skipUnless(HAS_EMEANS, "requires the emeans package")
+class TestSuperpixelEMeans(unittest.TestCase):
+    def test_consensus_classes_and_ordering(self):
+        from change_detection.superpixel_emeans import emeans_coarse_classification
+        rng = np.random.default_rng(0)
+        # Superpixel-like features [mean, var, q3, kurt, r25] of three groups.
+        groups = [(0.05, 80), (0.2, 50), (0.7, 8)]
+        F = np.concatenate([
+            np.column_stack([rng.normal(m, 0.01, n), rng.normal(m / 5, 0.002, n),
+                             rng.normal(m * 1.3, 0.01, n), rng.normal(3, 0.1, n),
+                             rng.normal(0.3 + m / 2, 0.02, n)])
+            for m, n in groups])
+        for consensus in (True, False):
+            cls = emeans_coarse_classification(F, seed=0, consensus=consensus)
+            np.testing.assert_array_equal(cls[:80], spc.HU)
+            np.testing.assert_array_equal(cls[80:130], spc.HEU)
+            np.testing.assert_array_equal(cls[130:], spc.CHANGED)
+
+    def test_end_to_end(self):
+        from change_detection import superpixel_emeans_change_detection
+        img1, img2, gt = make_synthetic_pair((300, 400), n_targets=10, seed=4)
+        res = superpixel_emeans_change_detection(img1, img2)
+        s = evaluate_objects(res.change_map, gt, 7, 20)
+        self.assertGreaterEqual(s.f1, 0.8, str(s))
+        self.assertEqual(set(np.unique(res.classes)), {spc.HU, spc.HEU, spc.CHANGED})

@@ -6,6 +6,9 @@ Implementations of two papers by G. Lee and K.-T. Kim (IEEE JSTARS, 2026):
   of Small Objects via Superpixel Classification".
 - :func:`fusion_change_detection`: "Unsupervised SAR Change Detection of
   Small Objects via Fusion of Difference Images".
+- :func:`superpixel_emeans_change_detection`: improved superpixel
+  classification variant with e-means coarse clustering (needs the
+  ``emeans`` package).
 
 Shared building blocks (difference images, Otsu, SLIC, DBSCAN object-level
 evaluation, synthetic data) are in :mod:`change_detection.common`.
@@ -19,6 +22,9 @@ from .superpixel_classification import (
     superpixel_change_detection, SuperpixelResult,
 )
 from .fusion import fusion_change_detection, FusionResult
+from .superpixel_emeans import (
+    superpixel_emeans_change_detection, emeans_coarse_classification,
+)
 
 __all__ = [
     "lee_filter", "log_ratio", "ncb_image", "otsu_threshold",
@@ -26,4 +32,5 @@ __all__ = [
     "evaluate_objects", "ObjectScores", "make_synthetic_pair",
     "superpixel_change_detection", "SuperpixelResult",
     "fusion_change_detection", "FusionResult",
+    "superpixel_emeans_change_detection", "emeans_coarse_classification",
 ]

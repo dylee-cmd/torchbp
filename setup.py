@@ -9,6 +9,8 @@ setup(
     install_requires=["torch", "numpy", "scipy"],
     extras_require = {
         'test': ["pytest", "expecttest"],
+        # change_detection.superpixel_emeans (e-means coarse clustering)
+        'emeans': ["emeans @ git+https://github.com/sacredvoid/emeans"],
         'docs':  [
             "matplotlib >=3.5",
             "nbval >=0.11",

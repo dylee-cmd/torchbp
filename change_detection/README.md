@@ -6,6 +6,7 @@ Implementations of two papers by G. Lee and K.-T. Kim (IEEE JSTARS, vol. 19, 202
 | --- | --- |
 | `superpixel_classification.py` | *Unsupervised SAR Change Detection of Small Objects via Superpixel Classification*, pp. 22726–22740 |
 | `fusion.py` | *Unsupervised SAR Change Detection of Small Objects via Fusion of Difference Images*, pp. 10394–10409 |
+| `superpixel_emeans.py` | Improved superpixel classification variant with [e-means](https://github.com/sacredvoid/emeans) coarse clustering |
 | `common.py` | Shared parts: Lee filter, log-ratio and NCB (Berger) difference images, Otsu, morphological opening, SLIC, k-means++, PCA, DBSCAN, object-level evaluation, synthetic data |
 | `demo.py` | Runs both methods and their ablations on synthetic scenes |
 
@@ -37,6 +38,42 @@ Demo with ablations and an optional figure:
 ```bash
 python -m change_detection.demo --seeds 4 --plot demo.png
 ```
+
+### e-means variant
+
+`superpixel_emeans.py` needs the [emeans](https://github.com/sacredvoid/emeans) package, which brings scikit-learn and threadpoolctl with it:
+
+```bash
+pip install git+https://github.com/sacredvoid/emeans    # or: pip install -e .[emeans]
+```
+
+```python
+from change_detection import superpixel_emeans_change_detection
+res = superpixel_emeans_change_detection(img1, img2)     # SLIC S=20, 10 e-means runs, consensus
+```
+
+It changes only the coarse stage of the superpixel method; the EM/BIC refinement is unchanged.
+
+- **e-means clustering.** The 3-class clustering of the standardized, PCA-decorrelated superpixel features uses `EMeans(n_clusters=3)` (mini-batch k-means with EMA centroids, a cosine step schedule and a last-pass mean; Bessa et al., arXiv:2611.09501) instead of Lloyd's k-means.
+- **Consensus of restarts.** Each of the 10 runs names its clusters by mean NCB. Every superpixel then takes the class most runs agree on; ties go to the lowest-inertia run. `consensus=False` keeps only the lowest-inertia run, as in the paper.
+- **Finer superpixels.** The default SLIC spacing is 20 (the paper uses 40), so small targets are less diluted by background inside a superpixel. This gives about 4× more superpixels to cluster.
+
+Object-level F1 on synthetic scenes (`python -m change_detection.demo`):
+
+| Scenes | Paper setting (k-means, S=40) | e-means variant |
+| --- | --- | --- |
+| standard, `--seeds 4` | 0.96 | 1.00 |
+| hard (3×5 px targets at 8 dB, decorrelated clutter), `--hard --targets 20 --seeds 6` | 0.70 (P 0.80, R 0.63) | 0.78 (P 0.92, R 0.68) |
+
+Where the gain on the hard scenes comes from:
+
+| Configuration | F1 |
+| --- | --- |
+| k-means, S=20 | 0.76 |
+| k-means consensus, S=20 | 0.76 |
+| e-means consensus, S=20 | 0.78 |
+
+So most of the improvement comes from the finer superpixel scale. e-means itself mainly raises precision (0.88 → 0.92). With only a few hundred superpixels, e-means is not faster than k-means; its speed advantage only appears for much larger sample counts.
 
 ## Method summaries
 
