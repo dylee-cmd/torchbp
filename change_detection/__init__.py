@@ -6,6 +6,10 @@ Implementations of two papers by G. Lee and K.-T. Kim (IEEE JSTARS, 2026):
   of Small Objects via Superpixel Classification".
 - :func:`fusion_change_detection`: "Unsupervised SAR Change Detection of
   Small Objects via Fusion of Difference Images".
+- :func:`cs_change_detection`: C. Villamil Lopez and U. Stilla,
+  "Monitoring of Construction Activity by Change Detection on SAR Time
+  Series Using Coherent Scatterers" (IEEE JSTARS, 2022), for coregistered
+  SLC time series.
 - :func:`superpixel_emeans_change_detection`: improved superpixel
   classification variant with e-means coarse clustering (needs the
   ``emeans`` package).
@@ -22,6 +26,11 @@ from .superpixel_classification import (
     superpixel_change_detection, SuperpixelResult,
 )
 from .fusion import fusion_change_detection, FusionResult
+from .coherent_scatterers import (
+    cs_change_detection, CSChangeResult, detect_coherent_scatterers, cd_metric,
+    pair_change_classes,
+)
+from .cs_simulation import make_slc_time_series
 from .superpixel_emeans import (
     superpixel_emeans_change_detection, emeans_coarse_classification,
 )
@@ -33,4 +42,6 @@ __all__ = [
     "superpixel_change_detection", "SuperpixelResult",
     "fusion_change_detection", "FusionResult",
     "superpixel_emeans_change_detection", "emeans_coarse_classification",
+    "cs_change_detection", "CSChangeResult", "detect_coherent_scatterers",
+    "cd_metric", "pair_change_classes", "make_slc_time_series",
 ]
