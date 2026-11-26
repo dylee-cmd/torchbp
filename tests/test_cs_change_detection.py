@@ -129,3 +129,24 @@ class TestEndToEnd(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAmplitudePair(unittest.TestCase):
+    def test_amplitude_only_pair(self):
+        from change_detection.cs_amplitude import (
+            amplitude_pair_change_detection, amplitude_similarity,
+        )
+        sc = make_slc_time_series(seed=1)
+        a1, a2 = np.abs(sc.stack[2]), np.abs(sc.stack[4])
+        sim = amplitude_similarity(a1, a1)
+        self.assertGreater(sim.min(), 0.999)
+        res = amplitude_pair_change_detection(a1, a2)
+        found = {}
+        for c, cat in zip(res.clusters, res.categories):
+            for o in sc.objects:
+                if o.contains(*c.center, pad=5):
+                    found.setdefault(o.name, []).append(cat)
+        self.assertEqual(found.get("new building"), ["appeared"])
+        self.assertEqual(found.get("demolished building"), ["disappeared"])
+        self.assertEqual(found.get("container stack"), ["appeared"])
+        self.assertFalse(res.change_map[sc.vegetation].any())

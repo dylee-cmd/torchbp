@@ -8,6 +8,7 @@ Implementations of three papers. Two are by G. Lee and K.-T. Kim (IEEE JSTARS, v
 | `fusion.py` | *Unsupervised SAR Change Detection of Small Objects via Fusion of Difference Images*, pp. 10394–10409 |
 | `superpixel_emeans.py` | Improved superpixel classification variant with [e-means](https://github.com/sacredvoid/emeans) coarse clustering |
 | `coherent_scatterers.py` | *Monitoring of Construction Activity by Change Detection on SAR Time Series Using Coherent Scatterers*, pp. 7499–7514 (2022) |
+| `cs_amplitude.py`, `examples/amplitude_pair_example.py` | Amplitude-only image-pair variant of the coherent-scatterer method and a runnable example |
 | `cs_simulation.py`, `cs_demo.py` | SLC time-series simulator and demo for the coherent-scatterer method |
 | `common.py` | Shared parts: Lee filter, log-ratio and NCB (Berger) difference images, Otsu, morphological opening, SLIC, k-means++, PCA, DBSCAN, object-level evaluation, synthetic data |
 | `demo.py` | Runs both methods and their ablations on synthetic scenes |
@@ -109,6 +110,28 @@ Inputs are coregistered complex SLC images `[azimuth, range]`. The method looks 
    - moving (shorter than `ΔT`);
    - temporary;
    - static.
+
+**Two amplitude images (no phase).** `cs_change_detection` needs SLC phase twice: for sub-look CS detection and for coherence. For amplitude-only pairs, `cs_amplitude.py` swaps in amplitude-based substitutes and reuses the rest of the pipeline through the `cs_maps=` / `metric=` arguments:
+- **CS proxy:** bright point scatterers, i.e. local maxima at least 10 dB above the local median intensity.
+- **CD metric:** amplitude similarity `1 - NCB`.
+
+```python
+import numpy as np
+from change_detection.cs_amplitude import amplitude_pair_change_detection
+
+res = amplitude_pair_change_detection(np.load("before.npy"), np.load("after.npy"),
+                                      spacing=(0.5, 0.5))   # pixel spacing (az, rg) in m
+for c, cat in zip(res.clusters, res.categories):            # "appeared" / "disappeared"
+    print(cat, c.n_cs, c.center)
+```
+
+The runnable example is `python -m change_detection.examples.amplitude_pair_example [--img1 a.npy --img2 b.npy --spacing AZ RG] [--plot out.png]`. Without input files it uses images 2 and 4 of the simulated series.
+- **Simulated pair, 3 seeds:** the demolished building, the new building and the container stack are always found with the right type, and there are no false alarms in vegetation.
+- **Snow-covered building:** reported as a change in 2 of 3 seeds. A pair cannot tell a transient from a lasting change; that needs a third image (the `r ≥ 1` metric).
+
+Further limitations without phase:
+- bright speckle peaks can pass as point scatterers (about 1e-3 of single-look clutter at 10 dB);
+- changes that keep the amplitude (sub-pixel motion) are invisible.
 
 `pair_change_classes` gives the image-pair interpretation of Table I: irrelevant, unchanged, disappeared, appeared, changed/moved.
 

@@ -456,7 +456,9 @@ def cs_change_detection(stack: Sequence[np.ndarray], times: Optional[Sequence[fl
                         min_cs: int = 30, min_area: float = 20.0,
                         delta_a: float = 3.0, a_min: float = -15.0,
                         margin: float = 0.5, closing_radius: int = 5,
-                        delta_t: float = 60.0, segment: bool = True) -> CSChangeResult:
+                        delta_t: float = 60.0, segment: bool = True,
+                        cs_maps: Optional[np.ndarray] = None,
+                        metric: Optional[np.ndarray] = None) -> CSChangeResult:
     """Coherent scatterer change detection of a coregistered SLC series.
 
     Parameters
@@ -488,15 +490,25 @@ def cs_change_detection(stack: Sequence[np.ndarray], times: Optional[Sequence[fl
         Segmentation parameters (3 dB, -15 dB, 50 %, 5 pixels).
     delta_t : float
         Duration threshold of the change analysis, in ``times`` units.
+    cs_maps : ndarray, optional
+        Precomputed [n, H, W] boolean CS maps replacing the sub-look phase
+        detection (e.g. for amplitude-only data, see
+        :mod:`change_detection.cs_amplitude`).
+    metric : ndarray, optional
+        Precomputed [n-1, H, W] CD metric replacing the coherence based
+        ``f_i`` (values compared with ``gamma_t``; high means unchanged).
     """
     stack = [np.asarray(s) for s in stack]
     n = len(stack)
     if n < 2:
         raise ValueError("need at least two images")
     times = np.arange(n, dtype=float) if times is None else np.asarray(times, dtype=float)
-    cs = np.stack([detect_coherent_scatterers(s, n_sublooks, overlap, cs_threshold,
-                                              range_axis, band_fraction) for s in stack])
-    f = cd_metric(stack, r, coh_window)
+    if cs_maps is None:
+        cs = np.stack([detect_coherent_scatterers(s, n_sublooks, overlap, cs_threshold,
+                                                  range_axis, band_fraction) for s in stack])
+    else:
+        cs = np.asarray(cs_maps, dtype=bool)
+    f = cd_metric(stack, r, coh_window) if metric is None else np.asarray(metric)
     events = cs_time_intervals(cs, f, gamma_t, k)
     clusters = cluster_events(events, spacing, eps, min_pts, min_cs, min_area, n)
     cats = [categorize(c, times, delta_t) for c in clusters]
